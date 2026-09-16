@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Placement Prediction Project</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<header class="topbar">
+    <h1>Placement Prediction Project</h1>
+</header>
+
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+
+        <ul>
+
+            <!-- Data Loading -->
+            <li>
+                <a href="{{ url_for('data_loading') }}"
+                   class="menu-item {% if active == 'data-loading' %}active{% endif %}">
+                    Data Loading
+                </a>
+            </li>
+
+
+            <!-- EDA -->
+            <li>
+                <a href="{{ url_for('eda') }}"
+                   class="menu-item {% if active == 'eda' %}active{% endif %}">
+                    EDA
+                </a>
+            </li>
+
+
+            <!-- Preprocessing -->
+            <li>
+                <a href="{{ url_for('preprocessing') }}"
+                   class="menu-item {% if active == 'preprocessing' %}active{% endif %}">
+                    Preprocessing
+                </a>
+            </li>
+
+
+            <!-- Linear Regression -->
+            <li>
+                <a href="{{ url_for('linear_regression') }}"
+                   class="menu-item {% if active == 'linear-regression' %}active{% endif %}">
+                    Linear Regression
+                </a>
+            </li>
+
+
+            <!-- Logistic Regression -->
+            <li>
+                <a href="{{ url_for('logistic_regression') }}"
+                   class="menu-item {% if active == 'logistic-regression' %}active{% endif %}">
+                    Logistic Regression
+                </a>
+            </li>
+            <li>
+    <a href="{{ url_for('decision_tree') }}"
+       class="menu-item">
+        Decision Trees
+    </a>
+</li>
+
+
+
+
+
+        </ul>
+
+    </nav>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+        <h2>Exploratory Data Analysis</h2>
+
+
+        <!-- ERROR -->
+        {% if error %}
+
+            <div class="error">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+
+        <!-- EDA RESULTS -->
+        {% if results %}
+
+
+            <!-- DATASET SUMMARY -->
+            <h3>Dataset Summary</h3>
+
+            <table class="summary-table">
+
+                <tr>
+                    <td>Rows</td>
+                    <td>{{ results.n_rows }}</td>
+                </tr>
+
+                <tr>
+                    <td>Columns</td>
+                    <td>{{ results.n_cols }}</td>
+                </tr>
+
+                <tr>
+                    <td>Duplicate Rows</td>
+                    <td>{{ results.duplicate_count }}</td>
+                </tr>
+
+            </table>
+
+
+            <!-- MISSING VALUES -->
+            {% if results.missing %}
+
+                <h3>Missing Values</h3>
+
+                <div class="table-wrapper">
+
+                    <table class="data-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Column</th>
+                                <th>Missing Count</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for col, count in results.missing.items() %}
+
+                            <tr>
+
+                                <td>
+                                    {{ col }}
+                                </td>
+
+                                <td>
+                                    {{ count }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <p>
+                    No missing values found.
+                </p>
+
+            {% endif %}
+
+
+            <!-- PLACEMENT STATUS -->
+            <h3>Placement Status Counts</h3>
+
+            <table class="summary-table">
+
+                <tr>
+                    <th>Status</th>
+                    <th>Count</th>
+                </tr>
+
+                {% for status, count in results.target_counts.items() %}
+
+                    <tr>
+
+                        <td>
+                            {{ status }}
+                        </td>
+
+                        <td>
+                            {{ count }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </table>
+
+
+            <!-- CHARTS -->
+            {% if results.charts %}
+
+                <h3>EDA Charts</h3>
+
+                <div class="chart-grid">
+
+                    {% for fname in results.charts %}
+
+                        <div class="chart-card">
+
+                            <img
+                                src="{{ url_for(
+                                    'static',
+                                    filename='charts/' + fname
+                                ) }}"
+                                alt="{{ fname }}"
+                            >
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+        {% endif %}
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
