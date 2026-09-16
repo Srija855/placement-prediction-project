@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Placement Prediction Project</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="topbar">
+    <h1>Placement Prediction Project</h1>
+</header>
+
+<div class="layout">
+
+    <nav class="sidebar">
+
+        <ul>
+
+            <li>
+                <a href="{{ url_for('data_loading') }}"
+                   class="menu-item {% if active == 'data-loading' %}active{% endif %}">
+                    Data Loading
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('eda') }}"
+                   class="menu-item {% if active == 'eda' %}active{% endif %}">
+                    EDA
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('preprocessing') }}"
+                   class="menu-item {% if active == 'preprocessing' %}active{% endif %}">
+                    Preprocessing
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('linear_regression') }}"
+                   class="menu-item {% if active == 'linear-regression' %}active{% endif %}">
+                    Linear Regression
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('logistic_regression') }}"
+                   class="menu-item {% if active == 'logistic-regression' %}active{% endif %}">
+                    Logistic Regression
+                </a>
+            </li>
+            <li>
+    <a href="{{ url_for('decision_tree') }}"
+       class="menu-item">
+        Decision Trees
+    </a>
+</li>
+
+
+
+        </ul>
+
+    </nav>
+
+
+    <main class="content">
+        {% if error %}
+    <div class="error-box">
+        <h3>Preprocessing Error</h3>
+        <p>{{ error }}</p>
+    </div>
+{% elif results %}
+
+        <h2>Preprocessing</h2>
+
+        <p>
+            Data preprocessing prepares the dataset for reliable
+            machine learning by handling missing values, outliers,
+            categorical features, scaling and model-readiness issues.
+        </p>
+
+
+        <!-- ================================================= -->
+        <!-- 1. DATA QUALITY -->
+        <!-- ================================================= -->
+
+        <h3>1. Data Quality</h3>
+
+        <p>
+            Analyze missing values and understand the possible reasons
+            for missing data before performing imputation.
+        </p>
+
+
+        <table class="summary-table">
+
+            <tr>
+                <td>Total Missing Values</td>
+
+                <td>
+                    {{ results.data_quality.total_missing }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Remaining Missing Values After Imputation</td>
+
+                <td>
+                    {{ results.data_quality.remaining_missing }}
+                </td>
+            </tr>
+
+        </table>
+
+
+        <h3>Missing Data Mechanisms</h3>
+
+        <table class="summary-table">
+
+            <tr>
+                <td>MCAR</td>
+
+                <td>
+                    Missing Completely At Random
+                </td>
+            </tr>
+
+            <tr>
+                <td>MAR</td>
+
+                <td>
+                    Missing At Random
+                </td>
+            </tr>
+
+            <tr>
+                <td>MNAR</td>
+
+                <td>
+                    Missing Not At Random
+                </td>
+            </tr>
+
+        </table>
+
+
+        <h3>Missing Value Analysis</h3>
+
+        {% if results.data_quality.missing_table %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Column</th>
+                        <th>Missing Count</th>
+                        <th>Missing Percentage</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for row in results.data_quality.missing_table %}
+
+                    <tr>
+
+                        <td>
+                            {{ row["Column"] }}
+                        </td>
+
+                        <td>
+                            {{ row["Missing Count"] }}
+                        </td>
+
+                        <td>
+                            {{ "%.2f"|format(row["Missing Percentage"]) }}%
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+            <p>No missing values were found.</p>
+
+        {% endif %}
+
+
+        <h3>Mean Imputation Bias</h3>
+
+        <p>
+            Numerical missing values can be replaced using the mean.
+            However, mean imputation can introduce bias when the
+            missing values are not randomly distributed.
+        </p>
+
+
+        <!-- ================================================= -->
+        <!-- 2. OUTLIER HANDLING -->
+        <!-- ================================================= -->
+
+        <h3>2. Outlier Handling</h3>
+
+        <p>
+            Robust IQR fences are used to identify observations that
+            are unusually high or low compared with the rest of the data.
+        </p>
+
+
+        <table class="summary-table">
+
+            <tr>
+                <td>Lower Fence</td>
+                <td>Q1 − 1.5 × IQR</td>
+            </tr>
+
+            <tr>
+                <td>Upper Fence</td>
+                <td>Q3 + 1.5 × IQR</td>
+            </tr>
+
+        </table>
+
+
+        <h3>Robust Outlier Fences</h3>
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Column</th>
+                        <th>Q1</th>
+                        <th>Q3</th>
+                        <th>IQR</th>
+                        <th>Lower Fence</th>
+                        <th>Upper Fence</th>
+                        <th>Outliers</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for row in results.outliers %}
+
+                    <tr>
+
+                        <td>
+                            {{ row["Column"] }}
+                        </td>
+
+                        <td>
+                            {{ row["Q1"] }}
+                        </td>
+
+                        <td>
+                            {{ row["Q3"] }}
+                        </td>
+
+                        <td>
+                            {{ row["IQR"] }}
+                        </td>
+
+                        <td>
+                            {{ row["Lower Fence"] }}
+                        </td>
+
+                        <td>
+                            {{ row["Upper Fence"] }}
+                        </td>
+
+                        <td>
+                            {{ row["Outliers"] }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- 3. DATA LEAKAGE -->
+        <!-- ================================================= -->
+
+        <h3>3. Data Leakage Prevention</h3>
+
+        <p>
+            Data leakage occurs when information from the test data
+            is unintentionally used while preparing the training data.
+        </p>
+
+
+        <table class="summary-table">
+
+            <tr>
+                <td>Target Column</td>
+
+                <td>
+                    {{ results.leakage.target }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Training Rows</td>
+
+                <td>
+                    {{ results.leakage.train_rows }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Testing Rows</td>
+
+                <td>
+                    {{ results.leakage.test_rows }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Status</td>
+
+                <td>
+                    {{ results.leakage.status }}
+                </td>
+            </tr>
+
+        </table>
+
+
+        <h3>Correct Preprocessing Flow</h3>
+
+        <p>
+            Dataset → Train/Test Split → Fit preprocessing on Training
+            Data → Transform Training Data → Transform Testing Data
+        </p>
+
+
+        <h3>Leakage - The Destroyer</h3>
+
+        <p>
+            Scalers, imputers and encoders should not learn information
+            from the test dataset. They must be fitted using training
+            data only.
+        </p>
+
+
+        <!-- ================================================= -->
+        <!-- 4. CATEGORICAL ENCODING -->
+        <!-- ================================================= -->
+
+        <h3>4. Categorical Encoding</h3>
+
+        <p>
+            Categorical features need to be converted into numerical
+            representations before being used by many machine learning
+            algorithms.
+        </p>
+
+
+        <h3>One-Hot Encoding</h3>
+
+        <p>
+            One-hot encoding creates separate binary columns for
+            different categories.
+        </p>
+
+
+        {% if results.one_hot %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                    {% for key in results.one_hot[0].keys() %}
+
+                        <th>
+                            {{ key }}
+                        </th>
+
+                    {% endfor %}
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for row in results.one_hot %}
+
+                    <tr>
+
+                    {% for value in row.values() %}
+
+                        <td>
+                            {{ value }}
+                        </td>
+
+                    {% endfor %}
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+            <p>No categorical columns available for One-Hot Encoding.</p>
+
+        {% endif %}
+
+
+        <h3>Ordinal Encoding</h3>
+
+        <p>
+            Ordinal encoding converts categories into numerical values
+            when the categories have a meaningful order.
+        </p>
+
+
+        {% if results.ordinal %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Original</th>
+                        <th>Encoded</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for row in results.ordinal %}
+
+                    <tr>
+
+                        <td>
+                            {{ row["Original"] }}
+                        </td>
+
+                        <td>
+                            {{ row["Encoded"] }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+            <p>No categorical columns available for Ordinal Encoding.</p>
+
+        {% endif %}
+
+
+        <h3>Target Encoding</h3>
+
+        <p>
+            Target encoding represents each category using a statistic
+            calculated from the target variable.
+        </p>
+
+
+        {% if results.target_encoding %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Category</th>
+                        <th>Target Mean</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for row in results.target_encoding %}
+
+                    <tr>
+
+                        <td>
+                            {{ row["Category"] }}
+                        </td>
+
+                        <td>
+                            {{ row["Target Mean"] }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+            <p>
+                Target encoding could not be demonstrated for the
+                current dataset.
+            </p>
+
+        {% endif %}
+
+
+        <h3>Embedding-Based Encoding</h3>
+
+        <p>
+            Embedding-based encoding represents categories using
+            learned numerical vectors. It is particularly useful for
+            high-cardinality categorical features.
+        </p>
+
+
+        <!-- ================================================= -->
+        <!-- 5. FEATURE SCALING -->
+        <!-- ================================================= -->
+
+        <h3>5. Feature Scaling</h3>
+
+        <p>
+            Feature scaling brings numerical variables to comparable
+            ranges so that features with large numerical values do not
+            dominate the learning process.
+        </p>
+
+
+        <h3>Min-Max Scaling</h3>
+
+        <p>
+            Min-Max scaling transforms values to a fixed range,
+            commonly between 0 and 1.
+        </p>
+
+        <p>
+            Formula:
+            <strong>(x − minimum) / (maximum − minimum)</strong>
+        </p>
+
+
+        <h3>Standardization</h3>
+
+        <p>
+            Standardization centers the data around zero and scales
+            it according to its standard deviation.
+        </p>
+
+        <p>
+            Formula:
+            <strong>(x − mean) / standard deviation</strong>
+        </p>
+
+
+        {% if results.scaling %}
+
+        <h3>Scaling Results</h3>
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                    {% for key in results.scaling[0].keys() %}
+
+                        <th>
+                            {{ key }}
+                        </th>
+
+                    {% endfor %}
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for row in results.scaling %}
+
+                    <tr>
+
+                    {% for value in row.values() %}
+
+                        <td>
+                            {{ value }}
+                        </td>
+
+                    {% endfor %}
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- 6. MODEL READINESS -->
+        <!-- ================================================= -->
+
+        <h3>6. Model Readiness</h3>
+
+        <p>
+            After preprocessing, the dataset should be suitable for
+            training a machine learning model and should generalize
+            well to unseen data.
+        </p>
+
+
+        <h3>Empirical Risk vs True Risk</h3>
+
+        <p>
+            Empirical risk represents the error measured on observed
+            training data, while true risk represents the expected
+            error on unseen data.
+        </p>
+
+
+        <h3>Generalization</h3>
+
+        <p>
+            A model should perform well on unseen data rather than
+            simply memorizing the training data.
+        </p>
+
+
+        <h3>Bayes Optimal Classifier vs Irreducible Error</h3>
+
+        <p>
+            The Bayes optimal classifier represents the theoretically
+            best possible classifier for the available information.
+            Irreducible error is the part of prediction error that
+            cannot be eliminated.
+        </p>
+
+
+        <h3>Bias-Variance Decomposition</h3>
+
+        <p>
+            Bias represents error caused by overly simple assumptions,
+            while variance represents sensitivity to the training data.
+            A good model balances both.
+        </p>
+
+
+        <h3>Overfitting vs Underfitting</h3>
+
+        {% if results.model_readiness.status == "" %}
+
+        <table class="summary-table">
+
+            <tr>
+                <td>Training Accuracy</td>
+
+                <td>
+                    {{ results.model_readiness.train_accuracy }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Testing Accuracy</td>
+
+                <td>
+                    {{ results.model_readiness.test_accuracy }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Train-Test Difference</td>
+
+                <td>
+                    {{ results.model_readiness.difference }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Interpretation</td>
+
+                <td>
+                    {{ results.model_readiness.interpretation }}
+                </td>
+            </tr>
+
+        </table>
+
+        {% else %}
+
+            <p>
+                {{ results.model_readiness.status }}
+            </p>
+
+        {% endif %}
+
+    </main>
+    {% endif %}
+</div>
+
+</body>
+</html>
