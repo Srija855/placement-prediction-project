@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Linear Regression</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="topbar">
+    <h1>Placement Prediction Project</h1>
+</header>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <ul>
+
+            <li>
+                <a href="{{ url_for('data_loading') }}"
+                   class="menu-item">
+                    Data Loading
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('eda') }}"
+                   class="menu-item">
+                    EDA
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('preprocessing') }}"
+                   class="menu-item">
+                    Preprocessing
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('linear_regression') }}"
+                   class="menu-item active">
+                    Linear Regression
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('logistic_regression') }}"
+                   class="menu-item">
+                    Logistic Regression
+                </a>
+            </li>
+            <li>
+    <a href="{{ url_for('decision_tree') }}"
+       class="menu-item">
+        Decision Trees
+    </a>
+</li>
+
+
+
+        </ul>
+    </nav>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+        <h2>Linear Regression</h2>
+
+
+        <!-- DESCRIPTION -->
+        <div class="info-box">
+
+            <p>
+                Linear Regression is used to predict the
+                <strong>Salary Package</strong> based on placement-related
+                features such as CGPA, Aptitude Test Score,
+                Coding Test Score and Mock Interview Score.
+            </p>
+
+        </div>
+
+
+        <!-- SELECT REGRESSION TYPE -->
+        <div class="model-section">
+
+            <h3>Select Regression Type</h3>
+
+            <form method="POST"
+                  action="{{ url_for('linear_regression') }}">
+
+                <label for="regression_type">
+                    Regression Model:
+                </label>
+
+                <select name="regression_type"
+                        id="regression_type"
+                        onchange="showRegressionType()">
+
+                    <option value="without"
+                        {% if regression_type == "without" %}
+                        selected
+                        {% endif %}>
+                        Without Regularization
+                    </option>
+
+                    <option value="with"
+                        {% if regression_type == "with" %}
+                        selected
+                        {% endif %}>
+                        With Regularization
+                    </option>
+
+                </select>
+
+
+                <!-- REGULARIZATION SELECTION -->
+                <div id="regularization-selection"
+                     style="margin-top: 20px;"
+                     class="{% if regression_type != 'with' %}hidden{% endif %}">
+
+                    <label for="regularization_type">
+                        Regularization:
+                    </label>
+
+                    <select name="regularization_type"
+                            id="regularization_type">
+
+                        <option value="ridge"
+                            {% if request.form.get('regularization_type', 'ridge') == 'ridge' %}
+                            selected
+                            {% endif %}>
+                            Ridge Regression (L2)
+                        </option>
+
+                        <option value="lasso"
+                            {% if request.form.get('regularization_type') == 'lasso' %}
+                            selected
+                            {% endif %}>
+                            Lasso Regression (L1)
+                        </option>
+
+                        <option value="elastic"
+                            {% if request.form.get('regularization_type') == 'elastic' %}
+                            selected
+                            {% endif %}>
+                            Elastic Net
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- RUN MODEL BUTTON -->
+                <button type="submit"
+                        style="margin-top: 20px;">
+                    Run Model
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- WITHOUT REGULARIZATION -->
+        {% if regression_type == "without" %}
+
+        <div id="without-regularization"
+             class="model-section">
+
+            <h3>Linear Regression Without Regularization</h3>
+
+            <p>
+                This model uses standard Linear Regression without
+                applying any regularization penalty.
+            </p>
+
+
+            {% if results %}
+
+            <h3>Dataset Information</h3>
+
+            <table class="summary-table">
+
+                <tr>
+                    <td>Total Rows</td>
+                    <td>{{ results.total_rows }}</td>
+                </tr>
+
+                <tr>
+                    <td>Training Rows</td>
+                    <td>{{ results.train_rows }}</td>
+                </tr>
+
+                <tr>
+                    <td>Testing Rows</td>
+                    <td>{{ results.test_rows }}</td>
+                </tr>
+
+            </table>
+
+
+            <!-- FEATURES -->
+            <h3>Features Used</h3>
+
+            <table class="summary-table">
+
+                {% for feature in results.features %}
+
+                <tr>
+                    <td>{{ feature }}</td>
+                    <td>Used</td>
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+
+            <!-- CORRELATION -->
+            <h3>Correlation with Salary Package</h3>
+
+            <table class="summary-table">
+
+                <tr>
+                    <th>Feature</th>
+                    <th>Correlation</th>
+                </tr>
+
+                {% for item in results.correlation %}
+
+                <tr>
+                    <td>{{ item.feature }}</td>
+                    <td>{{ item.correlation }}</td>
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+
+            <!-- EQUATION -->
+            <h3>Regression Equation</h3>
+
+            <div class="info-box">
+
+                <p>
+                    {{ results.equation }}
+                </p>
+
+            </div>
+
+
+            <!-- PERFORMANCE -->
+            <h3>Model Performance</h3>
+
+            <table class="summary-table">
+
+                <tr>
+                    <td>MAE</td>
+                    <td>{{ results.mae }}</td>
+                </tr>
+
+                <tr>
+                    <td>MSE</td>
+                    <td>{{ results.mse }}</td>
+                </tr>
+
+                <tr>
+                    <td>RMSE</td>
+                    <td>{{ results.rmse }}</td>
+                </tr>
+
+                <tr>
+                    <td>R² Score</td>
+                    <td>{{ results.r2 }}</td>
+                </tr>
+
+            </table>
+
+
+            <!-- CGPA GRAPH -->
+            <div class="graph-box">
+
+                <h3>CGPA vs Salary Package</h3>
+
+                <img src="{{ url_for('static',
+                         filename=results.cgpa_graph) }}"
+                     class="analysis-graph"
+                     alt="CGPA vs Salary">
+
+            </div>
+
+
+            <!-- ACTUAL VS PREDICTED -->
+            <div class="graph-box">
+
+                <h3>Actual vs Predicted Salary</h3>
+
+                <img src="{{ url_for('static',
+                         filename=results.actual_predicted_graph) }}"
+                     class="analysis-graph"
+                     alt="Actual vs Predicted Salary">
+
+            </div>
+
+
+            <!-- RESIDUAL -->
+            <div class="graph-box">
+
+                <h3>Residual Analysis</h3>
+
+                <img src="{{ url_for('static',
+                         filename=results.residual_graph) }}"
+                     class="analysis-graph"
+                     alt="Residual Analysis">
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- WITH REGULARIZATION -->
+        {% if regression_type == "with" %}
+
+        <div id="with-regularization"
+             class="model-section">
+
+            <h3>Linear Regression With Regularization</h3>
+
+            <p>
+                Regularization controls model complexity by adding
+                a penalty to the regression model.
+            </p>
+
+
+            {% if regularized %}
+
+            <!-- SELECTED MODEL -->
+            <h3>Selected Regularization Model</h3>
+
+            <div class="info-box">
+
+                <p>
+                    <strong>Model:</strong>
+                    {{ regularized.model }}
+                </p>
+
+            </div>
+
+
+            <!-- DATASET INFORMATION -->
+            <h3>Dataset Information</h3>
+
+            <table class="summary-table">
+
+                <tr>
+                    <td>Total Rows</td>
+                    <td>{{ regularized.total_rows }}</td>
+                </tr>
+
+                <tr>
+                    <td>Training Rows</td>
+                    <td>{{ regularized.train_rows }}</td>
+                </tr>
+
+                <tr>
+                    <td>Testing Rows</td>
+                    <td>{{ regularized.test_rows }}</td>
+                </tr>
+
+            </table>
+
+
+            <!-- FEATURES -->
+            <h3>Features Used</h3>
+
+            <table class="summary-table">
+
+                {% for feature in regularized.features %}
+
+                <tr>
+                    <td>{{ feature }}</td>
+                    <td>Used</td>
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+
+            <!-- EQUATION -->
+            <h3>Regression Equation</h3>
+
+            <div class="info-box">
+
+                <p>
+                    {{ regularized.equation }}
+                </p>
+
+            </div>
+
+
+            <!-- PERFORMANCE -->
+            <h3>Model Performance</h3>
+
+            <table class="summary-table">
+
+                <tr>
+                    <td>MAE</td>
+                    <td>{{ regularized.mae }}</td>
+                </tr>
+
+                <tr>
+                    <td>MSE</td>
+                    <td>{{ regularized.mse }}</td>
+                </tr>
+
+                <tr>
+                    <td>RMSE</td>
+                    <td>{{ regularized.rmse }}</td>
+                </tr>
+
+                <tr>
+                    <td>R² Score</td>
+                    <td>{{ regularized.r2 }}</td>
+                </tr>
+
+            </table>
+
+
+            <!-- CGPA GRAPH -->
+            {% if regularized.cgpa_graph %}
+
+            <div class="graph-box">
+
+                <h3>CGPA vs Salary Package</h3>
+
+                <img src="{{ url_for('static',
+                         filename=regularized.cgpa_graph) }}"
+                     class="analysis-graph"
+                     alt="CGPA vs Salary">
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- ACTUAL VS PREDICTED -->
+            {% if regularized.actual_predicted_graph %}
+
+            <div class="graph-box">
+
+                <h3>Actual vs Predicted Salary</h3>
+
+                <img src="{{ url_for('static',
+                         filename=regularized.actual_predicted_graph) }}"
+                     class="analysis-graph"
+                     alt="Actual vs Predicted Salary">
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- RESIDUAL -->
+            {% if regularized.residual_graph %}
+
+            <div class="graph-box">
+
+                <h3>Residual Analysis</h3>
+
+                <img src="{{ url_for('static',
+                         filename=regularized.residual_graph) }}"
+                     class="analysis-graph"
+                     alt="Residual Analysis">
+
+            </div>
+
+            {% endif %}
+
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- SALARY PREDICTION -->
+        <div class="prediction-box">
+
+            <h3>Predict Salary Package</h3>
+
+            <form method="POST"
+                  action="{{ url_for('linear_regression') }}">
+
+
+                <!-- KEEP CURRENT REGRESSION TYPE -->
+                <input type="hidden"
+                       name="regression_type"
+                       value="{{ regression_type or 'without' }}">
+
+
+                <!-- KEEP CURRENT REGULARIZATION MODEL -->
+                {% if regression_type == "with" %}
+
+                <input type="hidden"
+                       name="regularization_type"
+                       value="{{ request.form.get('regularization_type', 'ridge') }}">
+
+                {% endif %}
+
+
+                <label for="cgpa">
+                    CGPA
+                </label>
+
+                <input type="number"
+                       id="cgpa"
+                       name="cgpa"
+                       step="0.01"
+                       required>
+
+
+                <label for="aptitude">
+                    Aptitude Test Score
+                </label>
+
+                <input type="number"
+                       id="aptitude"
+                       name="aptitude"
+                       step="0.01"
+                       required>
+
+
+                <label for="coding">
+                    Coding Test Score
+                </label>
+
+                <input type="number"
+                       id="coding"
+                       name="coding"
+                       step="0.01"
+                       required>
+
+
+                <label for="interview">
+                    Mock Interview Score
+                </label>
+
+                <input type="number"
+                       id="interview"
+                       name="interview"
+                       step="0.01"
+                       required>
+
+
+                <button type="submit">
+                    Predict Salary
+                </button>
+
+            </form>
+
+
+            <!-- PREDICTION RESULT -->
+            {% if prediction is not none %}
+
+            <div class="prediction-result">
+
+                <h4>Predicted Salary Package</h4>
+
+                <p>
+                    {{ prediction }}
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- JAVASCRIPT -->
+<script>
+
+function showRegressionType() {
+
+    const type =
+        document.getElementById("regression_type").value;
+
+    const regularizationSelection =
+        document.getElementById("regularization-selection");
+
+
+    if (type === "with") {
+
+        regularizationSelection.classList.remove("hidden");
+
+    } else {
+
+        regularizationSelection.classList.add("hidden");
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
