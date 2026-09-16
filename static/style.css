@@ -1,0 +1,587 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #f4f6f8;
+    color: #222;
+}
+
+.topbar {
+    background-color: #1f3a5f;
+    color: white;
+    padding: 18px 24px;
+}
+
+.topbar h1 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.layout {
+    display: flex;
+    min-height: calc(100vh - 60px);
+}
+
+.sidebar {
+    width: 240px;
+    background-color: #26466f;
+    padding-top: 10px;
+}
+
+.sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-item {
+    display: block;
+    color: #e5ecf5;
+    padding: 14px 20px;
+    cursor: pointer;
+    border-left: 4px solid transparent;
+    text-decoration: none;
+}
+
+.menu-item:hover:not(.disabled) {
+    background-color: #33578a;
+}
+
+.menu-item.active {
+    background-color: #3d6aa3;
+    border-left: 4px solid #ffffff;
+    font-weight: bold;
+}
+
+.menu-item.disabled {
+    color: #8ba0bd;
+    cursor: not-allowed;
+}
+
+.content {
+    flex: 1;
+    padding: 24px 32px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#load-data-btn {
+    background-color: #1f3a5f;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#load-data-btn:hover {
+    background-color: #26466f;
+}
+
+#loading-spinner {
+    margin-top: 10px;
+    color: #555;
+}
+
+.error {
+    margin-top: 12px;
+    color: #b00020;
+    background: #fdecea;
+    padding: 10px 14px;
+    border-radius: 4px;
+}
+
+.summary-table {
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+.summary-table td {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    margin-top: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+}
+
+.data-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+}
+
+.data-table th, .data-table td {
+    border: 1px solid #ddd;
+    padding: 6px 10px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.data-table th {
+    background-color: #eaeff5;
+    position: sticky;
+    top: 0;
+}
+
+.chart-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.chart-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.chart-card img {
+    max-width: 400px;
+    display: block;
+}
+.model-section {
+    background-color: white;
+    padding: 18px;
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.model-section h3 {
+    margin-top: 0;
+}
+
+.data-table td:first-child {
+    font-weight: 500;
+}
+
+.content h2 {
+    margin-top: 0;
+}
+
+.content h3 {
+    margin-top: 25px;
+}
+
+p {
+    line-height: 1.6;
+}
+.info-box {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 25px;
+}
+
+.graph-box {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.analysis-graph {
+    width: 80%;
+    max-width: 850px;
+    height: auto;
+}
+
+.prediction-box {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 25px;
+    margin-top: 15px;
+    max-width: 600px;
+}
+
+.prediction-box label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 6px;
+}
+
+.prediction-box input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+}
+
+.prediction-box button {
+    margin-top: 20px;
+    padding: 11px 22px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.prediction-result {
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 6px;
+    background: #e9f2ff;
+    text-align: center;
+}
+
+.prediction-result h4 {
+    margin: 0 0 10px 0;
+}
+
+.prediction-result p {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+}
+.info-box {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 25px;
+}
+
+.graph-box {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.analysis-graph {
+    width: 70%;
+    max-width: 650px;
+    height: auto;
+}
+
+.formula {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 20px;
+}
+
+.prediction-box {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 25px;
+    max-width: 600px;
+}
+
+.prediction-box label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 6px;
+}
+
+.prediction-box input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.prediction-box button {
+    margin-top: 20px;
+    padding: 11px 22px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.prediction-result {
+    margin-top: 25px;
+    padding: 20px;
+    text-align: center;
+    border-radius: 6px;
+    background: #e9f2ff;
+}
+
+.prediction-result p {
+    font-size: 20px;
+}
+/* =====================================================
+   LOGISTIC REGRESSION
+   ===================================================== */
+
+.info-box {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 25px;
+}
+
+.graph-box {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.analysis-graph {
+    width: 70%;
+    max-width: 650px;
+    height: auto;
+}
+
+.formula {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 20px;
+}
+
+.prediction-box {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 25px;
+    max-width: 600px;
+}
+
+.prediction-box label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 6px;
+}
+
+.prediction-box input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+}
+
+.prediction-box button {
+    margin-top: 20px;
+    padding: 11px 22px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.prediction-result {
+    margin-top: 25px;
+    padding: 20px;
+    text-align: center;
+    border-radius: 6px;
+    background: #e9f2ff;
+}
+
+.prediction-result h4 {
+    margin-bottom: 15px;
+}
+
+.prediction-result p {
+    font-size: 20px;
+}
+/* =========================================================
+   LOGISTIC REGRESSION PAGE
+   ========================================================= */
+
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 25px;
+}
+
+.container h1 {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 35px;
+    color: #555;
+}
+
+.container section {
+    background: white;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.container section h2 {
+    margin-top: 0;
+    color: #1f3a5f;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.formula {
+    background: #f1f5f9;
+    padding: 18px;
+    margin-top: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Confusion Matrix */
+
+.matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.matrix div {
+    padding: 20px;
+    border-radius: 10px;
+    background: #f4f6f8;
+    text-align: center;
+}
+
+.matrix span {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.matrix strong {
+    font-size: 24px;
+}
+
+/* Graph */
+
+.graph {
+    display: block;
+    max-width: 600px;
+    width: 100%;
+    margin: 25px auto;
+}
+
+/* Accuracy */
+
+.accuracy {
+    background: #eef6ff;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.accuracy strong {
+    font-size: 24px;
+}
+
+/* Form */
+
+.container form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 500px;
+}
+
+.container form label {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.container form input {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+.container form button {
+    margin-top: 15px;
+    padding: 13px;
+    border: none;
+    border-radius: 7px;
+    background: #1f3a5f;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.container form button:hover {
+    background: #16304d;
+}
+
+/* Prediction Result */
+
+.prediction-result {
+    margin-top: 25px;
+    padding: 20px;
+    background: #eef6ff;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.prediction-result p {
+    font-size: 18px;
+}
+
+/* =====================================================
+   LINEAR REGRESSION DROPDOWN
+   ===================================================== */
+
+.model-section select {
+    margin-top: 8px;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 15px;
+    background-color: white;
+    min-width: 250px;
+    cursor: pointer;
+}
+
+.model-section select:focus {
+    outline: none;
+    border-color: #1f3a5f;
+}
+
+.model-section label {
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+

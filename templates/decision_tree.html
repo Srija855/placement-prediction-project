@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Decision Trees</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+
+<!-- ===================================================== -->
+<!-- TOP BAR -->
+<!-- ===================================================== -->
+
+<header class="topbar">
+
+    <h1>
+        Placement Prediction Project
+    </h1>
+
+</header>
+
+
+<div class="layout">
+
+
+<!-- ===================================================== -->
+<!-- SIDEBAR -->
+<!-- ===================================================== -->
+
+<nav class="sidebar">
+
+    <ul>
+
+        <li>
+
+            <a href="{{ url_for('data_loading') }}"
+               class="menu-item">
+
+                Data Loading
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="{{ url_for('eda') }}"
+               class="menu-item">
+
+                EDA
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="{{ url_for('preprocessing') }}"
+               class="menu-item">
+
+                Preprocessing
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="{{ url_for('linear_regression') }}"
+               class="menu-item">
+
+                Linear Regression
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="{{ url_for('logistic_regression') }}"
+               class="menu-item">
+
+                Logistic Regression
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="{{ url_for('decision_tree') }}"
+               class="menu-item active">
+
+                Decision Trees
+
+            </a>
+
+        </li>
+
+
+
+
+    </ul>
+
+</nav>
+
+
+<!-- ===================================================== -->
+<!-- MAIN CONTENT -->
+<!-- ===================================================== -->
+
+<main class="content">
+
+
+    <h2>
+        Tree-Based Algorithms
+    </h2>
+
+
+    <!-- ================================================= -->
+    <!-- ALGORITHM DROPDOWN -->
+    <!-- ================================================= -->
+
+    <div class="model-section">
+
+        <h3>
+            Select Algorithm
+        </h3>
+
+
+        <form method="POST"
+              action="{{ url_for('decision_tree') }}">
+
+
+            <select
+                name="model_type"
+                onchange="this.form.submit()">
+
+
+                <option
+                    value="decision_tree"
+
+                    {% if model_type =="decision_tree" %}
+                    selected
+                    {% endif %}
+                >
+
+                    Decision Tree
+
+                </option>
+
+
+                <option
+                    value="random_forest"
+
+                    {% if model_type =="random_forest" %}
+                    selected
+                    {% endif %}
+                >
+
+                    Random Forest
+
+                </option>
+
+
+                <option
+                    value="adaboost"
+
+                    {% if model_type =="adaboost" %}
+                    selected
+                    {% endif %}
+                >
+
+                    AdaBoost
+
+                </option>
+
+
+                <option
+                    value="gradient_boosting"
+
+                    {% if model_type =="gradient_boosting" %}
+                    selected
+                    {% endif %}
+                >
+
+                    Gradient Boosting
+
+                </option>
+
+
+                <option
+                    value="xgboost"
+
+                    {% if model_type =="xgboost" %}
+                    selected
+                    {% endif %}
+                >
+
+                    XGBoost
+
+                </option>
+
+
+                <option
+                    value="lightgbm"
+
+                    {% if model_type =="lightgbm" %}
+                    selected
+                    {% endif %}
+                >
+
+                    LightGBM
+
+                </option>
+
+
+            </select>
+
+        </form>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- ERROR -->
+    <!-- ================================================= -->
+
+    {% if error %}
+
+    <div class="info-box">
+
+        <strong>Error:</strong>
+
+        {{ error }}
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- RESULTS -->
+    <!-- ================================================= -->
+
+    {% if results %}
+
+
+    <div class="model-section">
+
+        <h3>
+            {{ results.model }}
+        </h3>
+
+
+        <table class="summary-table">
+
+            <tr>
+
+                <th>
+                    Topic
+                </th>
+
+                <th>
+                    Implemented Value
+                </th>
+
+            </tr>
+
+
+            {% for topic, value in results.topics.items() %}
+
+            <tr>
+
+                <td>
+                    {{ topic }}
+                </td>
+
+                <td>
+                    {{ value }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+
+            <!-- Accuracy -->
+
+            <tr>
+
+                <td>
+                    Accuracy
+                </td>
+
+                <td>
+                    {{ results.accuracy }}%
+                </td>
+
+            </tr>
+
+
+        </table>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- FEATURE IMPORTANCE -->
+    <!-- ================================================= -->
+
+    <div class="model-section">
+
+        <h3>
+            Feature Importance
+        </h3>
+
+
+        {% if results.feature_importance %}
+
+
+        <table class="summary-table">
+
+            <tr>
+
+                <th>
+                    Feature
+                </th>
+
+                <th>
+                    Importance
+                </th>
+
+            </tr>
+
+
+            {% for feature, value
+                  in results.feature_importance.items() %}
+
+
+            <tr>
+
+                <td>
+                    {{ feature }}
+                </td>
+
+                <td>
+                    {{ value }}
+                </td>
+
+            </tr>
+
+
+            {% endfor %}
+
+        </table>
+
+
+        {% if results.feature_importance_graph %}
+
+        <div class="graph-box">
+
+            <img
+                src="{{ url_for(
+                    'static',
+                    filename=results.feature_importance_graph
+                ) }}"
+                class="analysis-graph"
+                alt="Feature Importance">
+
+        </div>
+
+        {% endif %}
+
+
+        {% endif %}
+
+    </div>
+
+
+    {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- PREDICTION -->
+    <!-- ================================================= -->
+
+    <div class="prediction-box">
+
+        <h3>
+            Prediction
+        </h3>
+
+
+        <form method="POST"
+              action="{{ url_for('decision_tree') }}">
+
+
+            <input
+                type="hidden"
+                name="model_type"
+                value="{{ model_type }}"
+            >
+
+
+            <label>
+                CGPA
+            </label>
+
+            <input
+                type="number"
+                name="cgpa"
+                step="0.01"
+                required
+            >
+
+
+            <label>
+                Aptitude Test Score
+            </label>
+
+            <input
+                type="number"
+                name="aptitude"
+                step="0.01"
+                required
+            >
+
+
+            <label>
+                Coding Test Score
+            </label>
+
+            <input
+                type="number"
+                name="coding"
+                step="0.01"
+                required
+            >
+
+
+            <label>
+                Mock Interview Score
+            </label>
+
+            <input
+                type="number"
+                name="interview"
+                step="0.01"
+                required
+            >
+
+
+            <button type="submit">
+
+                Predict Placement
+
+            </button>
+
+
+        </form>
+
+
+        {% if prediction %}
+
+
+        <div class="prediction-result">
+
+
+            <h4>
+                Prediction Result
+            </h4>
+
+
+            <p>
+
+                <strong>
+                    Algorithm:
+                </strong>
+
+                {{ prediction.model }}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Result:
+                </strong>
+
+                {{ prediction.result }}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Placement Probability:
+                </strong>
+
+                {{ prediction.probability }}%
+
+            </p>
+
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</main>
+
+</div>
+
+</body>
+
+</html>
